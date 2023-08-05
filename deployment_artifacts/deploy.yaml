@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskmanager-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: minikube
+        image: taskmanager:latest
+        command:
+        env:
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 1000m
+          limits:
+            memory: 1Gi
+            cpu: 1000m
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        readinessProbe:
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: taskmanager
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: myapp
+  ports:
+  - port: 8080
+    targetPort: 8000
+    
